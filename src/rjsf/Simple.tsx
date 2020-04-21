@@ -1,9 +1,14 @@
-import React, { Component } from "react";
-import { render } from "react-dom";
-
+import { JSONSchema6Definition } from "json-schema";
+import React from "react";
 import Form from "react-jsonschema-form";
-import { alertJson, log } from "../utils/utils";
-import { JSONSchema6Type, JSONSchema6Definition } from "json-schema";
+
+export const alertJson = (any: any) => {
+  alert(JSON.stringify(any, null, 4));
+};
+
+export const log = (any: any) => {
+  console.log(any);
+};
 
 const mkSchema = (schema: JSONSchema6Definition): JSONSchema6Definition =>
   schema;
@@ -15,21 +20,21 @@ const garageCommon: JSONSchema6Definition = {
     location: mkSchema({
       title: "Location",
       type: "string",
-      enum: ["Adjacent to the building", "Beneath the building"]
+      enum: ["Adjacent to the building", "Beneath the building"],
     }),
     nonStandardPurpose: mkSchema({
       title: "Area is used for any purpose other than building access",
-      type: "boolean"
+      type: "boolean",
     }),
     areWallsFinished: mkSchema({
       title: "Walls are finished",
-      type: "boolean"
+      type: "boolean",
     }),
     garageSize: mkSchema({
       title: "Size of garage",
-      type: "number"
-    })
-  }
+      type: "number",
+    }),
+  },
 };
 
 const permanentOpenings: JSONSchema6Definition = {
@@ -38,17 +43,17 @@ const permanentOpenings: JSONSchema6Definition = {
   properties: {
     areFloodOpeningsEngineered: mkSchema({
       title: "Flood openings are engineered",
-      type: "boolean"
+      type: "boolean",
     }),
     numberOfVents: mkSchema({
       title: "Number of Vents",
-      type: "number"
+      type: "number",
     }),
     areaOfVents: mkSchema({
       title: "Total Area of Vents",
-      type: "number"
-    })
-  }
+      type: "number",
+    }),
+  },
 };
 
 const equipment: JSONSchema6Definition = {
@@ -58,7 +63,7 @@ const equipment: JSONSchema6Definition = {
     value: mkSchema({
       title: "Value",
       type: "string",
-      enum: ["1$-10,000$", "10,001$-20,000$", "Over 20,000$"]
+      enum: ["1$-10,000$", "10,001$-20,000$", "Over 20,000$"],
     }),
     totalValue: {},
     devices: mkSchema({
@@ -79,19 +84,19 @@ const equipment: JSONSchema6Definition = {
           "Hot Water Heater",
           "Water Filter",
           "Oil Tank",
-          "Well Water Tank"
-        ]
+          "Well Water Tank",
+        ],
       },
-      uniqueItems: true
-    })
+      uniqueItems: true,
+    }),
   },
   dependencies: {
     value: {
       oneOf: [
         mkSchema({
           properties: {
-            value: mkSchema({ enum: ["1$-10,000$", "10,001$-20,000$"] })
-          }
+            value: mkSchema({ enum: ["1$-10,000$", "10,001$-20,000$"] }),
+          },
         }),
 
         mkSchema({
@@ -100,13 +105,13 @@ const equipment: JSONSchema6Definition = {
 
             totalValue: mkSchema({
               title: "Total value",
-              type: "number"
-            })
-          }
-        })
-      ]
-    }
-  }
+              type: "number",
+            }),
+          },
+        }),
+      ],
+    },
+  },
 };
 
 const garageSchema: JSONSchema6Definition = {
@@ -117,34 +122,34 @@ const garageSchema: JSONSchema6Definition = {
     permanentOpenings,
     hasMachinery: mkSchema({
       type: "boolean",
-      title: "Has machinery servicing the building"
-    })
+      title: "Has machinery servicing the building",
+    }),
   },
   dependencies: {
     hasMachinery: {
       oneOf: [
         mkSchema({
           properties: {
-            hasMachinery: mkSchema({ enum: [false] })
-          }
+            hasMachinery: mkSchema({ enum: [false] }),
+          },
         }),
         mkSchema({
           properties: {
             hasMachinery: mkSchema({ enum: [true] }),
-            equipment
-          }
-        })
-      ]
-    }
-  }
+            equipment,
+          },
+        }),
+      ],
+    },
+  },
 };
 
 const uiSchema = {
   equipment: {
     devices: {
-      "ui:widget": "checkboxes"
-    }
-  }
+      "ui:widget": "checkboxes",
+    },
+  },
 };
 
 export const Simple = () => (
@@ -153,5 +158,10 @@ export const Simple = () => (
     onSubmit={({ formData }) => log(formData)}
     onError={alertJson}
     uiSchema={uiSchema}
+    formData={{
+      garageCommon: {
+        garageSize: "24",
+      },
+    }}
   />
 );
